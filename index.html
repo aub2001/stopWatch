@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StopWatch</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="timer">00.00.00.0<sub>00</sub></div>
+        <div class="split-time">
+            Split Time
+        </div>
+        <div class="buttons">
+            <input type="button" class="start" value="start" onclick="handleStart(this)"></input>
+            <input type="button" class="split" value="split" onclick="handleSplit()" disabled="true"></input> 
+            <input type="button" class="reset" value="reset" onclick="handleReset()"></input>
+        </div>
+        <br><hr>
+        <div class="log"></div>
+    </div>
+
+
+
+    
+    <script>
+        let [milliseconds,seconds,minutes,hours] = [0,0,0,0];
+        let [s_milliseconds,s_seconds,s_minutes,s_hours] = [0,0,0,0];   // for split time
+        let int = null;
+        let index = 1;
+        let timerRef = document.querySelector(".timer");
+
+        function handleStart(el){
+            if(el.className === "start"){
+                if(int!==null){
+                    clearInterval(int);
+                }
+                int = setInterval(displayTimer,10);
+                el.setAttribute("class","pause");
+                el.value ="pause";
+                document.querySelector(".reset").disabled = true;
+                document.querySelector(".split").disabled = false;
+            }
+            else{
+                clearInterval(int);
+                el.setAttribute("class","start");
+                el.value ="start";
+                document.querySelector(".log").innerHTML += `# ${index} &emsp; ${formatTime()} &emsp; pause ` + "<br>"
+                document.querySelector(".reset").disabled = false;
+                document.querySelector(".split").disabled = true;
+            }
+        };
+
+
+        function handleSplit(){
+            document.querySelector(".log").innerHTML += `# ${index} &emsp; ${formatTime()} &emsp; spilt ` + "<br>";
+            [s_milliseconds,s_seconds,s_minutes,s_hours] = [0,0,0,0];
+        }
+
+        function handleReset(){
+            clearInterval(int);
+            [milliseconds,seconds,minutes,hours] = [0,0,0,0];
+            [s_milliseconds,s_seconds,s_minutes,s_hours] = [0,0,0,0];
+            document.querySelector(".timer").innerHTML = '00 : 00 : 00 : 0<sub>00</sub> ';
+            document.querySelector(".split-time").innerHTML = 'Split Time';
+            document.querySelector(".log").innerHTML = '';
+        };
+
+        function displayTimer(){
+            milliseconds+=10;
+            if(milliseconds == 1000){
+                milliseconds = 0;
+                seconds++;
+                if(seconds == 60){
+                    seconds = 0;
+                    minutes++;
+                    if(minutes == 60){
+                        minutes = 0;
+                        hours++;
+                    }
+                }
+            }
+            s_milliseconds+=10;
+            if(s_milliseconds == 1000){
+                s_milliseconds = 0;
+                s_seconds++;
+                if(s_seconds == 60){
+                    s_seconds = 0;
+                    s_minutes++;
+                    if(s-minutes == 60){
+                        s_minutes = 0;
+                        s_hours++;
+                    }
+                }
+            }
+            printVals();
+            printSplit();
+        }
+
+        function formatTime(){
+            let h = hours < 10 ? "0" + hours : hours;
+            let m = minutes < 10 ? "0" + minutes : minutes;
+            let s = seconds < 10 ? "0" + seconds : seconds;
+            let ms = milliseconds < 10 ? "00" + milliseconds : milliseconds < 100 ? "0" + milliseconds : milliseconds;
+
+            return ` ${h} : ${m} : ${s} : ${ms}`;
+        }
+
+        function formatTimeSplit(){
+            let h = s_hours < 10 ? "0" + s_hours : s_hours;
+            let m = s_minutes < 10 ? "0" + s_minutes : s_minutes;
+            let s = s_seconds < 10 ? "0" + s_seconds : s_seconds;
+            let ms = s_milliseconds < 10 ? "00" + s_milliseconds : s_milliseconds < 100 ? "0" + s_milliseconds : milliseconds;
+
+            return ` ${h} : ${m} : ${s} : ${ms}`;
+        }
+
+        function printVals(){
+            let t =formatTime();
+            document.querySelector(".timer").innerHTML = t;
+        }
+
+
+        function printSplit(){
+            let t =formatTimeSplit();
+            document.querySelector(".split-time").innerHTML = t; 
+        }
+
+    </script>
+</body>
+</html>
